@@ -1,0 +1,185 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Clientes",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b22ea1f1-048a-495d-820b-e0535512d93b",
+      "name": "Webhook",
+      "webhookId": "c3357691-c623-4283-8dfa-8b00801c3b6c"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1104,
+        0
+      ],
+      "id": "d321a47c-c2ff-4cc2-86ab-148a55ca3c08",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.clientes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "c93df878-e685-4fa6-afa3-15bca4b03f6b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "url": "https://digitalinnovationone.github.io/dio-lab-assistente-investimentos-rpa-n8n/data.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "56a7ad38-9804-447c-a437-b14eb79e7823",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"Você é um consultor financeiro. Crie uma mensagem personalizada e encorajadora para o cliente ̲{{ $('Split Out').item.json.nome }}, que possui perfil {{ $('Split Out').item.json.perfil }} e saldo de {{ $('Split Out').item.json.saldo }} . Recomende opções de investimento adequadas para o perfil dele de forma clara.\"",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {
+          "batchSize": 1,
+          "delayBetweenBatches": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        672,
+        0
+      ],
+      "id": "160eb37d-ba47-4506-95eb-845704d003d6",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 500
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        176
+      ],
+      "id": "13bc80fc-13cb-408d-93af-08be5f293899",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rCF4oF8ms9Kgkzt7",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "edf90979-352d-4f82-8354-95945790d8b2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0ea4a285a1807feb70dd92c257ecda54a0a3ec31d713e1fd6dcc6d670bd04343"
+  },
+  "nodeGroups": [],
+  "id": "xHWDQ9o1UZ6CsmGr",
+  "tags": []
+}
