@@ -34,7 +34,7 @@ flowchart LR
 ```text
 .
 ├── main.py              # Script Python de RPA para raspagem e envio dos dados
-├── workflow-n8n.json    # Exportação do Workflow construído no n8n
+├── My workflow.json     # Exportação do Workflow construído no n8n
 └── README.md            # Documentação do projeto
 ```
 ---
